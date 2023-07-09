@@ -35,8 +35,17 @@ def run_worker():
 
     with Connection(red):
 
-        workers = Worker.all(queue=queue)
-        #worker = Worker( queue=irdsq_outmsg )
+        #workers = Worker.all(queue=queue)
+        worker = Worker( queue=irdsq_outmsg )
+        worker.work()
+        print('OK')
+        print(worker.name)
+
+        print('Successful jobs: ' + str(worker.successful_job_count))
+        print('Failed jobs: ' + str(worker.failed_job_count))
+        print('Total working time: '+ str(worker.total_working_time)) 
+
+        """
         for worker in workers:
             print('name=' + worker.name)
             worker.work()
@@ -47,7 +56,7 @@ def run_worker():
             print('Failed jobs: ' + str(worker.failed_job_count))
             print('Total working time: '+ str(worker.total_working_time)) 
 
-
+        """
 
 if __name__ == '__main__':
     run_worker()
