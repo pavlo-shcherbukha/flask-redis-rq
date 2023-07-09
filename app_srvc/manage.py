@@ -36,7 +36,7 @@ def run_worker():
     with Connection(red):
 
         #workers = Worker.all(queue=queue)
-        worker = Worker( queue=queue )
+        worker = Worker( queue )
         worker.work()
         print('OK')
         print(worker.name)
