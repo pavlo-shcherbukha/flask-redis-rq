@@ -25,9 +25,9 @@ def test():
 
 def run_worker():
     red = redis.StrictRedis(irds_host, irds_port, charset="utf-8", password=irds_psw, decode_responses=True)
-    # listen = [irdsq_outmsg]
+    listen = [irdsq_outmsg]
     #workers = Worker.all(connection=red)
-    listen = ["default"]
+    #listen = ["default"]
     queue = Queue(irdsq_outmsg, connection=red)
 
     #for worker in workers:
@@ -36,7 +36,8 @@ def run_worker():
     with Connection(red):
 
         #workers = Worker.all(queue=queue)
-        worker = Worker( queue )
+        #worker = Worker( queue )
+        worker = Worker(map(Queue, listen))
         worker.work()
         print('OK')
         print(worker.name)
@@ -45,18 +46,6 @@ def run_worker():
         print('Failed jobs: ' + str(worker.failed_job_count))
         print('Total working time: '+ str(worker.total_working_time)) 
 
-        """
-        for worker in workers:
-            print('name=' + worker.name)
-            worker.work()
-            print('OK')
-            print(worker.name)
-
-            print('Successful jobs: ' + str(worker.successful_job_count))
-            print('Failed jobs: ' + str(worker.failed_job_count))
-            print('Total working time: '+ str(worker.total_working_time)) 
-
-        """
 
 if __name__ == '__main__':
     run_worker()
