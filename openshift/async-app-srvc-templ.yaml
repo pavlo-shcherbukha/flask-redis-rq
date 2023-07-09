@@ -101,7 +101,7 @@ objects:
             - name: LD_LIBRARY_PATH
               value: /opt/app-root/src/hello_app/iitlib
             - name: GUNICORN_CMD_ARGS
-              value: -k gevent --workers=1 --worker-connections=2000  --bind=0.0.0.0:8080
+              value: --workers=1 --worker-connections=2000  --bind=0.0.0.0:8080
                 --access-logfile=-
             - name: APP_MODULE
               value: app_srvc.webapp

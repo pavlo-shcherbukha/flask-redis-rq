@@ -1,0 +1,60 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+apiVersion: v1
+metadata:
+  name: py-ubi8docker-route-template
+  annotations:
+    openshift.io/display-name: "py-ubi8docker-route-template"
+    description: >-
+      The template for deployment Python flask service 
+
+    tags: "python flask"
+    iconClass: fas fa-tools
+    openshift.io/provider-display-name: "Pavlo Shcherbukha" 
+    openshift.io/documentation-url: "https://github.com/pavlo-shcherbukha/" 
+    openshift.io/support-url: "https://github.com/pavlo-shcherbukha/" 
+objects:
+  - apiVersion: route.openshift.io/v1
+    kind: Route
+    metadata:
+      labels:
+        app: "${APP_NAME}"
+        app.kubernetes.io/part-of: "${APP_NAME}"
+      name: "${ROUTENAME}"
+    spec:
+      host: "${HOSTNAME}"
+      port:
+        targetPort: ${{PORTNUMBER}}
+      to:
+        kind: "Service"
+        name: ${APP_SERVICE_NAME}
+        weight: null
+    status:
+      ingress: null
+parameters:
+  - name: NAMESPACE
+    displayName: Namespace 
+    description: The Namespace where service must be deployed. 
+    required: true   
+  - name: APP_SERVICE_NAME
+    displayName: APP Service Name 
+    description: The name of the OpenShift Service exposed for the APP.
+    required: true   
+  - name: APP_NAME
+    displayName: Application Name 
+    description: The name of the OpenShift Application  for Groupe of Servoces.
+    required: true 
+  - name: ROUTENAME
+    displayName: ROUTE name 
+    description: Input ROUTENAME name 
+    required: true   
+  - name: HOSTNAME
+    displayName: HOST name 
+    description: Input HOSTNAME name 
+    required: true 
+  - name: PORTNUMBER
+    displayName: PORT NUMBER 
+    description: Input PORT number 
+    required: true 
+
+  
