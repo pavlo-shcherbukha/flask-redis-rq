@@ -33,6 +33,9 @@ USER 1001
 # Install the dependencies
 RUN python3.9 -m pip install --upgrade pip
 RUN /usr/libexec/s2i/assemble
+RUN chmod 777  /opt/app-root/src/app_srvc/manage.py
+
+
 EXPOSE 8080
 
 # Remote debug run: packages

@@ -1,0 +1,181 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+apiVersion: v1
+metadata:
+  name: pvx-iit-service-template
+  annotations:
+    openshift.io/display-name: "iit service template"
+    description: >-
+      Шаблон для розгортання 
+
+    tags: "py"
+    iconClass: fas fa-tools
+    openshift.io/provider-display-name: "Pavlo Shcherbukha" 
+    openshift.io/documentation-url: "https://github.com/README.md" 
+    openshift.io/support-url: "https://github.com/README.md" 
+objects:
+  - apiVersion: image.openshift.io/v1
+    kind: ImageStream
+    metadata:
+      labels:
+        app: "${APP_NAME}"
+        app.kubernetes.io/part-of: "${APP_NAME}"
+      name: "${APP_SERVICE_NAME}"
+    spec:
+      lookupPolicy:
+        local: false
+    status:
+      dockerImageRepository: ""
+  - apiVersion: build.openshift.io/v1
+    kind: BuildConfig
+    metadata:
+      name: "${APP_SERVICE_NAME}"
+      labels:
+        app: "${APP_NAME}"
+        app.kubernetes.io/part-of: "${APP_NAME}"
+    spec:
+      source:
+        contextDir: /
+        git:
+          ref: ${GIT_BRANCH}
+          uri: ${GIT_URL}
+        sourceSecret:
+          name: psh-gihtub
+        type: Git
+      strategy:
+        type: Docker                      
+        dockerStrategy:
+          env:
+            - name: GIT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: psh-gihtub
+                  key: username
+            - name: GIT_PSW
+              valueFrom:
+                secretKeyRef:
+                  name: psh-gihtub
+                  key: password
+            - name: GIT_BRANCH
+              value: ${GIT_BRANCH}
+            - name: GIT_URL
+              value: ${GIT_URL}
+          dockerfilePath: ${DOCKER_PTH}    # Look for Dockerfile in: gitUri/contextDir/dockerfilePath
+      output:
+        to:
+          kind: ImageStreamTag
+          name: "${APP_SERVICE_NAME}:latest"
+  - apiVersion: apps.openshift.io/v1
+    kind: DeploymentConfig
+    metadata:
+      labels:
+        app: "${APP_NAME}"
+        app.kubernetes.io/part-of: "${APP_NAME}"
+      name: "${APP_SERVICE_NAME}"
+      namespace: "${NAMESPACE}"
+    spec:
+      replicas: 1
+      revisionHistoryLimit: 10
+      selector:
+        app: "${APP_SERVICE_NAME}"
+        deploymentconfig: "${APP_SERVICE_NAME}"
+      strategy:
+        activeDeadlineSeconds: 21600
+        resources: {}
+        rollingParams:
+          intervalSeconds: 1
+          maxSurge: 25%
+          maxUnavailable: 25%
+          timeoutSeconds: 600
+          updatePeriodSeconds: 1
+        type: Rolling
+      template:
+        metadata:
+          creationTimestamp: null
+          labels:
+            app: "${APP_SERVICE_NAME}"
+            deploymentconfig: "${APP_SERVICE_NAME}"
+        spec:
+          containers:
+          - env:
+            - name: APP_SCRIPT
+              value: app_srvc.manage.py 
+            - name: APP_MODULE
+              value: app_srvc.manage.py
+            - name: RDS_HOST
+              value: "${DATABASE_SERVICE_NAME}"
+            - name: RDS_PORT
+              value: "6379"
+            - name: RDS_PSW
+              value: "qq"
+            imagePullPolicy: Always
+            name: "${APP_SERVICE_NAME}"
+            resources: {}
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+          dnsPolicy: ClusterFirst
+          restartPolicy: Always
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+      test: false
+      triggers:
+      - imageChangeParams:
+          automatic: true
+          containerNames:
+          - ${APP_SERVICE_NAME}
+          from:
+            kind: ImageStreamTag
+            name: "${APP_SERVICE_NAME}:latest"
+            namespace: "${NAMESPACE}"
+        type: ImageChange
+      - type: ConfigChange
+    status: {}
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      labels:
+        app: "${APP_NAME}"
+        app.kubernetes.io/part-of: "${APP_NAME}"
+      name: "${APP_SERVICE_NAME}"
+    spec:
+      ports:
+      - name: 8080-tcp
+        nodePort: 0
+        port: 8080
+        protocol: TCP
+        targetPort: 8080
+      selector:
+        deploymentconfig: "${APP_SERVICE_NAME}"
+    status:
+      loadBalancer: {}
+parameters:
+  - name: DATABASE_SERVICE_NAME
+    displayName: Database Service Name 
+    description: The name of the OpenShift Service exposed for the database.
+    value: "redis"
+    required: true 
+  - name: NAMESPACE
+    displayName: Namespace 
+    description: The Namespace where service must be deployed. 
+    required: true   
+  - name: APP_SERVICE_NAME
+    displayName: APP Service Name 
+    description: The name of the OpenShift Service exposed for the APP.
+    required: true   
+  - name: APP_NAME
+    displayName: Application Name 
+    description: The name of the OpenShift Application  for Groupe of Servoces.
+    required: true 
+  - name: GIT_BRANCH
+    displayName: Git branch
+    description: Git branch where source code
+    required: true 
+  - name: GIT_URL
+    displayName: Git URL 
+    description: Git url where source code
+    required: true 
+  - name: DOCKER_PTH
+    displayName: Dockerfile path 
+    description: Path to Dockerfile
+    required: true 
