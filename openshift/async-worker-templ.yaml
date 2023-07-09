@@ -99,7 +99,7 @@ objects:
           containers:
           - env:
             - name: APP_SCRIPT
-              value: app_srvc.manage.py 
+              value: /opt/app-root/src/app_srvc/manage.py 
             - name: APP_MODULE
               value: app_srvc.manage.py
             - name: RDS_HOST

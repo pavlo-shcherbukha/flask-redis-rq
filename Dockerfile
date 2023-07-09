@@ -17,6 +17,7 @@ RUN echo "PYTHONUNBUFFERED=1" >> /opt/app-root/etc/xapp.sh
 RUN echo "PYTHONDONTWRITEBYTECODE=1" >> /opt/app-root/etc/xapp.sh
 RUN echo "python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 8080" >> /opt/app-root/etc/xapp.sh
 RUN chmod 777 /opt/app-root/etc/xapp.sh
+RUN chmod 777  /opt/app-root/src/app_srvc/manage.py
 
 RUN echo "========= PRINT DEBUG SH-FILE=========="
 RUN cat /opt/app-root/etc/xapp.sh
@@ -33,7 +34,7 @@ USER 1001
 # Install the dependencies
 RUN python3.9 -m pip install --upgrade pip
 RUN /usr/libexec/s2i/assemble
-RUN chmod 777  /opt/app-root/src/app_srvc/manage.py
+
 
 
 EXPOSE 8080
