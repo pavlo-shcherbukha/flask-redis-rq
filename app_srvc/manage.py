@@ -36,7 +36,7 @@ def run_worker():
     with Connection(red):
 
         #workers = Worker.all(queue=queue)
-        worker = Worker( queue=irdsq_outmsg )
+        worker = Worker( queue=queue )
         worker.work()
         print('OK')
         print(worker.name)
