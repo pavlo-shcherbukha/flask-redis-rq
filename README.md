@@ -20,7 +20,14 @@
 
 Це як працювати з redis https://redis.io/docs/clients/python/
 
-.\env\Scripts\activate.ps1
+
+
+- https://testdriven.io/blog/asynchronous-tasks-with-flask-and-redis-queue/
+тут  ще цікаво https://github.com/mjhea0/flask-redis-queue/tree/main
 
 
 
+## Що робимо
+
+- Перше, це деплоъмо redis з каталога openhsift
+- робимо простий Flask app

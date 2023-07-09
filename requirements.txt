@@ -1,2 +1,7 @@
 Flask
 gunicorn
+requests
+datetime
+redis
+rq
+# Flask-RQ2
