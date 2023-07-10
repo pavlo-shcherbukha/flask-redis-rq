@@ -30,7 +30,8 @@
                 "RDS_HOST": "localhost",
                 "RDS_PORT": "16379",
                 "RDS_PSW":  "qq",
-                "RDSQ_OUTMSG": "QUE_OUTMSG"
+                "RDSQ_OUTMSG": "QUE_OUTMSG",
+                "RDSQ_ROBOT": "QUE_ROBOT"
 
             },
             "args": [
@@ -50,13 +51,30 @@
                 "RDS_HOST": "localhost",
                 "RDS_PORT": "16379",
                 "RDS_PSW":  "qq",
-                "RDSQ_OUTMSG": "QUE_OUTMSG"
+                "RDSQ_OUTMSG": "QUE_OUTMSG",
+                "RDSQ_ROBOT": "QUE_ROBOT"
             },
             "args": [
                 "test",
 
             ]
         },
-            
+        {
+            "name": "Python: dbworker.py",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/dbworker.py",
+            "env": {
+                "RDS_HOST": "localhost",
+                "RDS_PORT": "16379",
+                "RDS_PSW":  "qq",
+                "RDSQ_OUTMSG": "QUE_OUTMSG",
+                "RDSQ_ROBOT": "QUE_ROBOT"
+            },
+            "args": [
+                "test",
+
+            ]
+        },            
     ]
 }
