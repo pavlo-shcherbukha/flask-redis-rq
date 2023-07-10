@@ -4,7 +4,7 @@ oc project %APP_PROJ%
 pause
 
 set fltempl=async-worker-templ.yaml 
-set fldepl=async-dbscanner-depl.yaml 
+set fldepl=async-repeater-depl.yaml 
 
 
 set DATABASE_SERVICE_NAME=redis
@@ -13,7 +13,7 @@ set APP_NAME=async-app-srvc
 set GIT_BRANCH=main
 set GIT_URL=https://github.com/pavlo-shcherbukha/flask-redis-rq.git
 set DOCKER_PTH=./Dockerfile
-set WORKER_RUNNER=/opt/app-root/lib/python3.9/site-packages/rq_scheduler/scripts/rqscheduler.py
+set WORKER_RUNNER=/opt/app-root/lib/python3.9/site-packages/rq_scheduler/scripts/rqscheduler.py -b True -H redis -p 6379 -d 0 -P qq
 
 oc delete -f %fldepl%
 pause
