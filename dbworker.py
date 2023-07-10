@@ -36,8 +36,11 @@ def run_worker():
             #idjob=q_robot.enqueue_in( timedelta(seconds=body_dict["timedelta"]),  app_srvc.tasks.task_robot, body_dict)
             log("getting current job", label)
             curentjob=worker.get_current_job()
-            log("running worker " + curentjob.get_id(), label)
-            log("running worker " + curentjob.exc_info(), label)
+            if curentjob is None:
+                 log("Curent Job is None", label)
+            else:
+                log("running worker " + curentjob.get_id(), label)
+                log("running worker " + curentjob.exc_info(), label)
             worker.work(logging_level="DEBUG", with_scheduler=True, burst=True)
             worker.work()
             log("reshedule job", label)
