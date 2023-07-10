@@ -81,7 +81,7 @@ irdsq_outmsg = os.getenv('RDSQ_OUTMSG');
 
 log('Connec tо redis: ' + 'host=' + irds_host + ' Port=' + irds_port + ' Password: ' + irds_psw )
 log("Connect to Redis")
-red = redis.StrictRedis(irds_host, irds_port, charset="utf-8", password=irds_psw, decode_responses=True)
+red = redis.StrictRedis(irds_host, irds_port, charset="utf-8", password=irds_psw, decode_responses=False)
 log(" Trying PING")
 rping=red.ping()
 log( str(rping) )
