@@ -99,7 +99,7 @@ objects:
           containers:
           - env:
             - name: APP_SCRIPT
-              value: /opt/app-root/etc/workerapp.sh 
+              value: "${WORKER_RUNNER}"
             - name: APP_MODULE
               value: app_srvc.manage.py
             - name: RDS_HOST
@@ -110,6 +110,8 @@ objects:
               value: "qq"
             - name: RDSQ_OUTMSG
               value: QUE_OUTMSG
+            - name: RDSQ_ROBOT
+              value: QUE_ROBOT
             imagePullPolicy: Always
             name: "${APP_SERVICE_NAME}"
             resources: {}
@@ -181,3 +183,8 @@ parameters:
     displayName: Dockerfile path 
     description: Path to Dockerfile
     required: true 
+  - name: WORKER_RUNNER
+    displayName: WORKER_RUNNER
+    description: Path to SH WORKER_RUNNER
+    required: true 
+
