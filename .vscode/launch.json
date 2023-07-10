@@ -42,10 +42,10 @@
             "jinja": true
         }, 
         {
-            "name": "Python: Watson",
+            "name": "Python: manage.py",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/app_srvc/manage.py",
+            "program": "${workspaceFolder}/manage.py",
             "env": {
                 "RDS_HOST": "localhost",
                 "RDS_PORT": "16379",
