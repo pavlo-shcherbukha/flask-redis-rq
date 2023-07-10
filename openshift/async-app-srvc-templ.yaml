@@ -111,6 +111,8 @@ objects:
               value: "6379"
             - name: RDS_PSW
               value: "qq"
+            - name: RDSQ_OUTMSG
+              value: QUE_OUTMSG
             imagePullPolicy: Always
             name: "${APP_SERVICE_NAME}"
             resources: {}
