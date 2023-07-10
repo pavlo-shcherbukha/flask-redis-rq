@@ -22,7 +22,7 @@ RUN echo "rq worker QUE_OUTMSG -u redis://:qq@redis:6379/0"  >> /opt/app-root/et
 
 RUN echo "rq worker QUE_ROBOT -u redis://:qq@redis:6379/0 with_scheduler=True"  >> /opt/app-root/etc/dbscanner.sh
 
-RUN echo "/opt/app-root/lib/python3.9/site-packages/rq_scheduler/scripts/rqscheduler.py -b True -H redis -p 6379 -d 0 -P qq"  >> /opt/app-root/etc/repeater.sh 
+RUN echo "python /opt/app-root/lib/python3.9/site-packages/rq_scheduler/scripts/rqscheduler.py -b True -H redis -p 6379 -d 0 -P qq"  >> /opt/app-root/etc/repeater.sh
 
 RUN chmod 777 /opt/app-root/etc/xapp.sh
 RUN chmod 777 /opt/app-root/etc/workerapp.sh
