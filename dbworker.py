@@ -19,10 +19,10 @@ def run_worker():
         worker = Worker(map(Queue, listen))
         try:
             #idjob=q_robot.enqueue_in( timedelta(seconds=body_dict["timedelta"]),  app_srvc.tasks.task_robot, body_dict)
-            curentjob=worker.get_current_job()
+            #curentjob=worker.get_current_job()
             worker.work(logging_level="DEBUG", with_scheduler=True)
             print("reshedule job")
-            queue.enqueue_job(job=curentjob)
+            #queue.enqueue_job(job=curentjob)
             print("resheduled !!!")   
         except Exception as e:
             print(e)   
