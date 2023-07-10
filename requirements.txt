@@ -4,5 +4,6 @@ requests
 datetime
 redis
 rq
+rq_scheduler
 ptvsd 
 debugpy
