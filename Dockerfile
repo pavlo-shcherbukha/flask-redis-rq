@@ -20,7 +20,7 @@ RUN echo "python /opt/app-root/src/manage.py" >> /opt/app-root/etc/workerapp.sh
 
 RUN echo "rq worker QUE_OUTMSG -u redis://:qq@redis:6379/0"  >> /opt/app-root/etc/rqworker.sh
 
-RUN echo "rq worker QUE_ROBOT -u redis://:qq@redis:6379/0"  >> /opt/app-root/etc/dbscanner.sh
+RUN echo "rq worker QUE_ROBOT -u redis://:qq@redis:6379/0 with_scheduler=True"  >> /opt/app-root/etc/dbscanner.sh
 
 RUN chmod 777 /opt/app-root/etc/xapp.sh
 RUN chmod 777 /opt/app-root/etc/workerapp.sh
