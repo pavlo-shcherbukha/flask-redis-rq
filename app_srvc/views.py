@@ -13,7 +13,7 @@ import redis
 import rq
 from rq import Queue, Worker, Connection
 from rq.registry import ScheduledJobRegistry
-#from rq_scheduler import Scheduler
+from rq_scheduler import Scheduler
 
 
 from app_srvc.Errors import AppError, AppValidationError, InvalidAPIUsage
@@ -238,3 +238,57 @@ def run_wstop():
         return json.dumps(result), 422, {'Content-Type':'application/json'}
 
 
+@application.route("/api/wrq", methods=["post"])
+def run_wstart():
+    """
+        start robot with time in sec and number of  fatchaed records
+        request={"timedelta": 15, "records": 20, "msg": "start regular job"}
+        response={"ok": true, "idjob": "ewrwqeq", "queue": "name"}
+    """
+    label="RQStartrobot"
+    result={}
+    log('Start Job', label)
+    try:
+        body = request.get_json()
+        body_dict = dict(body)
+        log("Request body is " + json.dumps(body_dict) ,label)
+        if not 'timedelta' in body_dict:
+            raise InvalidAPIUsage( "InvalidAPIRequestParams",  "No key [timedelta]", target=label,status_code=422, payload = {"code": "NoKey", "description": "Не вказано обов'язковий ключ в запиті" } )
+
+        if not 10 <=  body_dict["timedelta"] <= 360:
+            raise InvalidAPIUsage( "InvalidAPIRequestParams",  "Out of Range value in [timedelta]", target=label,status_code=422, payload = {"code": "OutOfRangeValue", "description": "Не допустимий діапазон значень" } )
+
+        if not 'records' in body_dict:
+            raise InvalidAPIUsage( "InvalidAPIRequestParams",  "No key [records]", target=label,status_code=422, payload = {"code": "NoKey", "description": "Не вказано обов'язковий ключ в запиті" } )
+        
+        if not 25 <=  body_dict["records"] <= 200:
+            raise InvalidAPIUsage( "InvalidAPIRequestParams",  "Out of Range value in [records]", target=label,status_code=422, payload = {"code": "OutOfRangeValue", "description": "Не допустимий діапазон значень" } )
+
+        if not 'msg' in body_dict:
+            raise InvalidAPIUsage( "InvalidAPIRequestParams",  "No key [msg]", target=label,status_code=422, payload = {"code": "NoKey", "description": "Не вказано обов'язковий ключ в запиті" } )
+
+        log("Start robot using queue " + q_robot.name ,label)
+        
+        scheduler = Scheduler(queue=q_robot, connection=red)
+        idjob = scheduler.schedule(scheduled_time=datetime.datetime.utcnow(), func= app_srvc.tasks.task_robot, args=[body_dict], repeat=None, interval=body_dict["timedelta"])
+        jobcnt=scheduler.count()
+        log("В чергу відправлено завдання з jobid=" + idjob.get_id(), label)
+       
+
+        result={"ok": True, "idjob": idjob.get_id(), "queue": q_robot.name}
+        return json.dumps(  result ), 200, {'Content-Type':'application/json'}
+    except Exception as e:
+        ex_type, ex_value, ex_traceback = sys.exc_info()
+        trace_back = traceback.extract_tb(ex_traceback)
+        stack_trace = list()
+        for trace in trace_back:
+            stack_trace.append("File : %s , Line : %d, Func.Name : %s, Message : %s" % (trace[0], trace[1], trace[2], trace[3]))
+        #ex_code=e.code
+        ex_name=ex_type.__name__
+        ex_dsc=ex_value.args[0]
+
+        result["ok"]=False
+        result["error"]=ex_dsc
+        result["errorCode"]=ex_name
+        result["trace"]=stack_trace 
+        return json.dumps(result), 422, {'Content-Type':'application/json'}
