@@ -113,6 +113,8 @@ objects:
               value: "qq"
             - name: RDSQ_OUTMSG
               value: QUE_OUTMSG
+            - name: RDSQ_ROBOT
+              value: QUE_ROBOT
             imagePullPolicy: Always
             name: "${APP_SERVICE_NAME}"
             resources: {}

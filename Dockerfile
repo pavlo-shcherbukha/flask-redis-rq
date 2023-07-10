@@ -17,11 +17,15 @@ RUN echo "PYTHONUNBUFFERED=1" >> /opt/app-root/etc/xapp.sh
 RUN echo "PYTHONDONTWRITEBYTECODE=1" >> /opt/app-root/etc/xapp.sh
 RUN echo "python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 8080" >> /opt/app-root/etc/xapp.sh
 RUN echo "python /opt/app-root/src/manage.py" >> /opt/app-root/etc/workerapp.sh
+
 RUN echo "rq worker QUE_OUTMSG -u redis://:qq@redis:6379/0"  >> /opt/app-root/etc/rqworker.sh
+
+RUN echo "rq worker QUE_ROBOT -u redis://:qq@redis:6379/0"  >> /opt/app-root/etc/dbscanner.sh
 
 RUN chmod 777 /opt/app-root/etc/xapp.sh
 RUN chmod 777 /opt/app-root/etc/workerapp.sh
 RUN chmod 777 /opt/app-root/etc/rqworker.sh
+RUN chmod 777 /opt/app-root/etc/dbscanner.sh
 
 # RUN chmod 777  /opt/app-root/src/manage.py
 
