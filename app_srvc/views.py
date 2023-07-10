@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime,timedelta
 import flask 
 from flask import Flask, render_template, request, jsonify, make_response
 from flask.cli import FlaskGroup
@@ -15,7 +15,8 @@ from rq import Queue, Worker, Connection
 
 
 from app_srvc.Errors import AppError, AppValidationError, InvalidAPIUsage
-from app_srvc.tasks import crttask_sendmsg
+#from app_srvc.tasks import crttask_sendmsg
+import app_srvc.tasks
 
 application = Flask(__name__)
 cli = FlaskGroup(create_app=application)
@@ -123,7 +124,18 @@ def sendmsg():
      label="sendmsgtoQueue"
      body = request.get_json()
      body_dict = dict(body)
-     idjob=q.enqueue(crttask_sendmsg, body_dict)
+     #idjob=q_msg.enqueue(app_srvc.tasks.crttask_sendmsg)
+     try:
+        l1=q_msg.get_job_ids()
+        log( "поислаю в " + q_msg.name, label)
+        log( "num jobs " , label)
+        idjob=q_msg.enqueue(app_srvc.tasks.crttask_sendmsg, body_dict)
+        print( "jobid"+ idjob.get_id())
+        ##idjob=q_msg.enqueue_in( timedelta(seconds=10), app_srvc.tasks.crttask_sendmsg)
+        l2=q_msg.get_job_ids()
+        #q_msg.run_sync
+     except Exception as e:
+         print(e)   
      #q = Queue(connection=red)
      res={"ok": True, "idjob": idjob.get_id()}
      return json.dumps(  res ), 200, {'Content-Type':'application/json'}
