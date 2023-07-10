@@ -23,6 +23,7 @@ def run_worker():
             worker.work(logging_level="DEBUG", with_scheduler=True)
             print("reshedule job")
             #queue.enqueue_job(job=curentjob)
+            
             print("resheduled !!!")   
         except Exception as e:
             print(e)   
