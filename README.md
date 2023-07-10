@@ -33,6 +33,9 @@
 https://medium.com/codex/asynchronous-tasks-in-flask-with-redis-for-beginners-259ae5303704
 https://kb.objectrocket.com/redis/create-a-simple-task-queue-with-flask-and-redis-1467
 https://realpython.com/flask-by-example-implementing-a-redis-task-queue/
+
+- !!!! тут вроді цікаво
+https://app.bountysource.com/teams/rq-scheduler/issues?tracker_ids=328915
 ## Що робимо
 
 - Перше, це деплоъмо redis з каталога openhsift

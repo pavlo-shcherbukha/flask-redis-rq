@@ -12,6 +12,8 @@ import time
 import redis
 import rq
 from rq import Queue, Worker, Connection
+from rq.registry import ScheduledJobRegistry
+#from rq_scheduler import Scheduler
 
 
 from app_srvc.Errors import AppError, AppValidationError, InvalidAPIUsage
@@ -172,8 +174,16 @@ def run_wstart():
             raise InvalidAPIUsage( "InvalidAPIRequestParams",  "No key [msg]", target=label,status_code=422, payload = {"code": "NoKey", "description": "Не вказано обов'язковий ключ в запиті" } )
 
         log("Start robot using queue " + q_robot.name ,label)
+        registry = ScheduledJobRegistry(queue=q_robot)
+        #scheduler = Scheduler(queue=q_robot, connection=red)
+        #idjob = scheduler.schedule(scheduled_time=datetime.datetime.utcnow(), func= app_srvc.tasks.task_robot, args=[body_dict], repeat=None, interval=body_dict["timedelta"])
+        #djob=scheduler.enqueue_in( timedelta(seconds=body_dict["timedelta"]),  app_srvc.tasks.task_robot, body_dict)
+        #jobcnt=scheduler.count()
+        #scheduler.enqueue_job(idjob)
         idjob=q_robot.enqueue_in( timedelta(seconds=body_dict["timedelta"]),  app_srvc.tasks.task_robot, body_dict)
         log("В чергу відправлено завдання з jobid=" + idjob.get_id(), label)
+        registry = ScheduledJobRegistry(queue=q_robot)
+
         result={"ok": True, "idjob": idjob.get_id(), "queue": q_robot.name}
         return json.dumps(  result ), 200, {'Content-Type':'application/json'}
     except Exception as e:
