@@ -4,7 +4,13 @@ import json
 import logging
 import random
 
-logging.basicConfig(filename='worker.log', level=logging.DEBUG)
+import redis
+import rq
+from rq import Queue, Worker, Connection
+from rq.registry import ScheduledJobRegistry
+
+
+logging.basicConfig(filename='task.log', level=logging.DEBUG)
 def log( a_msg='NoMessage', a_label='logger' ):
 	dttm = datetime.now()
 	ls_dttm = dttm.strftime('%d-%m-%y %I:%M:%S %p')
