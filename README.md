@@ -26,7 +26,13 @@
 тут  ще цікаво https://github.com/mjhea0/flask-redis-queue/tree/main
 
 
+- https://testdriven.io/blog/asynchronous-tasks-with-flask-and-redis-queue/ 
+отето мабуть дуже корисна
 
+- от ще
+https://medium.com/codex/asynchronous-tasks-in-flask-with-redis-for-beginners-259ae5303704
+https://kb.objectrocket.com/redis/create-a-simple-task-queue-with-flask-and-redis-1467
+https://realpython.com/flask-by-example-implementing-a-redis-task-queue/
 ## Що робимо
 
 - Перше, це деплоъмо redis з каталога openhsift
