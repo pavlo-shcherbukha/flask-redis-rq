@@ -154,7 +154,7 @@ def task_robot( robot_params ):
     #time.sleep(delay)
 
     log('Connec tо redis: ' + 'host=' + irds_host + ' Port=' + irds_port + ' Password: ' + irds_psw, label )
-    log("Connect to Redis", , label)
+    log("Connect to Redis",  label)
     red = redis.StrictRedis(irds_host, irds_port, charset="utf-8", password=irds_psw, decode_responses=False)
     log(" Trying PING",  label)
     rping=red.ping()
