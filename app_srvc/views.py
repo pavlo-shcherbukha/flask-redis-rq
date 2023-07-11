@@ -182,6 +182,7 @@ def run_wstart():
         if 'rplstatus' in body_dict:
             if body_dict["rplstatus"] == "START":
                 red.set(i_rpl_status, "START")
+                body_dict["rplstatus"] == "STARTED"
         else:
             rpl_status=red.get(i_rpl_status).decode('UTF-8')
             if rpl_status=="STOP":
