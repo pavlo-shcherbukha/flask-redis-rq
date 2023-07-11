@@ -268,11 +268,24 @@ def run_wstop():
     result={}
     log('Stop Job', label)
     try:
+        rpl_job_id=red.get(i_rpl_job_id).decode('UTF-8')
+        log('Потомчний JOB=' + rpl_job_id, label)
+        registry = ScheduledJobRegistry(queue=q_robot)
+        log('Отримую JOBS в реєстрі. Зареєстровано = ' + str(registry.count) , label)
+        job_ids=registry.get_job_ids()
+        log('JOB_ID  поіменно = ' + json.dumps(job_ids)  )
+        log("Видаляю jobs з registry", label)
+        registry.remove_jobs()
+        log("О, віидалив! Залишилося в registry jobs " + str(registry.count) , label)
+        
+        log('Видаляю JOBS з черги:', label)
         job_list=q_robot.get_jobs()
         for job in job_list:
+            log("Видаляю з черги jobid=" + job.get_id(), label)
             job.delete()  
-        registry = ScheduledJobRegistry(queue=q_robot)
-        registry.cleanup()
+        log('Очищаю ключ поточного JOBS в [' + i_rpl_job_id + ']', label)
+        red.set(i_rpl_job_id, "NONE")
+
 
         log('Stopped all Jobs', label)
         result={"ok": True}
