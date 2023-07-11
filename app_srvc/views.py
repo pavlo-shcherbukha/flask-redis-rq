@@ -183,7 +183,7 @@ def run_wstart():
             if body_dict["rplstatus"] == "START":
                 red.set(i_rpl_status, "START")
         else:
-            rpl_status=red.get(i_rpl_status)
+            rpl_status=red.get(i_rpl_status).decode('UTF-8')
             if rpl_status=="STOP":
                 result={"ok": True, "idjob": "0", "queue": "None"}
                 return json.dumps(  result ), 200, {'Content-Type':'application/json'}
@@ -205,8 +205,8 @@ def run_wstart():
                     break
 
         if job_found:
-            #raise InvalidAPIUsage( "InvalidAPIRequestParams",  f"Task has allready sheduled [jobid={rpl_job_id} ]", target=label,status_code=422, payload = {"code": "Jobid exists", "description": "ЗАвдання вже поставлено в чергу" } )
-            log("нуда існує", label)
+            raise InvalidAPIUsage( "InvalidAPIRequestParams",  f"Task has allready sheduled [jobid={rpl_job_id} ]", target=label,status_code=422, payload = {"code": "Jobid exists", "description": "ЗАвдання вже поставлено в чергу" } )
+            #log("нуда існує", label)
         q_robot.fetch_job
         idjob=q_robot.enqueue_in( timedelta(seconds=body_dict["timedelta"]),  app_srvc.tasks.task_robot, body_dict)
         log("В чергу відправлено завдання з jobid=" + idjob.get_id(), label)
