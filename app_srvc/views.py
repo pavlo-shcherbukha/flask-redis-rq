@@ -183,9 +183,10 @@ def run_wstart():
             if body_dict["rplstatus"] == "START":
                 red.set(i_rpl_status, "START")
                 body_dict["rplstatus"] = "STARTED"
-            else:
-                result={"ok": True, "idjob": "0", "queue": "None",  "rplstatus":  body_dict["rplstatus"] }
-                return json.dumps(  result ), 200, {'Content-Type':'application/json'}                    
+                del body_dict["rplstatus"]
+            #else:
+                #result={"ok": True, "idjob": "0", "queue": "None",  "rplstatus":  body_dict["rplstatus"] }
+                #return json.dumps(  result ), 200, {'Content-Type':'application/json'}                    
         else:
             rpl_status=red.get(i_rpl_status).decode('UTF-8')
             if rpl_status=="STOP":
