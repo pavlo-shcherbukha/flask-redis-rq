@@ -36,6 +36,9 @@ https://realpython.com/flask-by-example-implementing-a-redis-task-queue/
 
 - !!!! тут вроді цікаво
 https://app.bountysource.com/teams/rq-scheduler/issues?tracker_ids=328915
+
+https://buildmedia.readthedocs.org/media/pdf/python_rq_docs_cn/latest/python_rq_docs_cn.pdf
+
 ## Що робимо
 
 - Перше, це деплоъмо redis з каталога openhsift
