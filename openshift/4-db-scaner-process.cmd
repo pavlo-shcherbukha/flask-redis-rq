@@ -13,7 +13,7 @@ set APP_NAME=async-app-srvc
 set GIT_BRANCH=main
 set GIT_URL=https://github.com/pavlo-shcherbukha/flask-redis-rq.git
 set DOCKER_PTH=./Dockerfile
-set WORKER_RUNNER=/opt/app-root/etc/dbscanner.sh
+set WORKER_RUNNER=dbworker.py
 
 oc delete -f %fldepl%
 pause

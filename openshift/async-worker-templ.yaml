@@ -98,10 +98,12 @@ objects:
         spec:
           containers:
           - env:
-            - name: APP_SCRIPT
+            #- name: APP_SCRIPT
+            #  value: "${WORKER_RUNNER}"
+            - name: APP_FILE
               value: "${WORKER_RUNNER}"
-            - name: APP_MODULE
-              value: app_srvc.manage.py
+            #- name: APP_MODULE
+            #  value: app_srvc.manage.py
             - name: RDS_HOST
               value: "${DATABASE_SERVICE_NAME}"
             - name: RDS_PORT
