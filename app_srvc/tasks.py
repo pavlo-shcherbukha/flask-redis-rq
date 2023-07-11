@@ -75,15 +75,16 @@ def get_data():
     """
 
     result={}
-    label="get data"
+    label="getdata"
     try:
- 
+     
         base_url="https://gorest.co.in"
         req_url= base_url+"/public/v2/todos"
-        req_data=jobprm
-        response = requests.post(req_url,  data=json.dumps(req_data) , headers={'Content-Type':  'application/json'} )    
+        log( f"Запит на URL {req_url}", label)
+        response = requests.get(req_url , headers={'Content-Type':  'application/json'}, verify=True )    
 
         if response.status_code == 200:
+            log( f"Отримана відповідь  status_code == 200", label)
             result['ok']=True
             result["errorCode"]=response.status_code
             result["resText"]=response.text
@@ -92,6 +93,7 @@ def get_data():
             result['ok']=False
             result["error"]=response.text
             result["errorCode"]=response.status_code
+            log( f"Отримана помилка при виконанні запита {response.status_code} {response.text} ", label)
 
         return result  
     except Exception as e:
@@ -108,6 +110,7 @@ def get_data():
         result["error"]=ex_dsc
         result["errorCode"]=ex_name
         result["trace"]=stack_trace 
+        log( f"Взагалі помилка  {ex_dsc} {ex_name} {stack_trace}", label)
 
         return result     
 
@@ -125,6 +128,7 @@ def crttask_sendmsg( message ):
 def task_robot( robot_params ):
     
     label="task_robot"
+    repeat=False
     log("task robot", label)
     log("reobot params = " + json.dumps(robot_params), label) 
 
@@ -132,16 +136,33 @@ def task_robot( robot_params ):
     log( "Параметр запуску: records=" + str(robot_params["records"]), label)
     log( "Додаткові параметри: " + robot_params["msg"], label)
 
-    delay=random.randint(5, robot_params["timedelta"])     #robot_params["timedelta"]//2
-    log( "Запускаю обробник на (сек)" + str(delay), label)
-    time.sleep(delay)
-    log( "Перезапускаю завдання", label)
-  
-    result = repeatjob(  robot_params )
-    log( "Результат перезапуску", label)
-    if result['ok']==True:
-        log( "Перезапуск успішний " + json.dumps(result), label)
+    #delay=random.randint(5, robot_params["timedelta"])     #robot_params["timedelta"]//2
+    #log( "Запускаю обробник на (сек)" + str(delay), label)
+    #time.sleep(delay)
+    log( "Отримую набір даних для обробки" , label)
+    result_data=get_data()
+    log( "Аналізую дані", label)
+    if result_data['ok']==True:
+        datalist=result_data["resBody"]
+        datalen=len(datalist)
+        log( f"Отримано {datalen} записів" , label)
+
     else:
-        log( "Перезапуск НЕЕЕЕ успішний " + json.dumps(result), label)
-    log( "Зупиняю обробник !!!!", label)
+        log( "Помилка при виконанні завдання: " + json.dumps(result), label)
+        log( "!!!!Продовжуєм, не зупиняємся!!!!!! " , label)
+
+
+    
+    if repeat:
+        log( "======================================================================", label)
+        log( "Запит на перезапуск завдання ", label)
+        result = repeatjob(  robot_params )
+        log( "Результат перезапуску", label)
+        if result['ok']==True:
+            log( "Перезапуск успішний " + json.dumps(result), label)
+        else:
+            log( "Перезапуск НЕЕЕЕ успішний " + json.dumps(result), label)
+        log( "======================================================================", label)    
+
+    log( "Обробник роботу виконав !!!!", label)
     return True
