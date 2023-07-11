@@ -85,7 +85,7 @@ items:
         containers:
         - env:
           - name: APP_SCRIPT
-            value: /opt/app-root/lib/python3.9/site-packages/rq_scheduler/scripts/rqscheduler.py
+            value: /opt/app-root/etc/dbscanner.sh
           - name: APP_MODULE
             value: app_srvc.manage.py
           - name: RDS_HOST
