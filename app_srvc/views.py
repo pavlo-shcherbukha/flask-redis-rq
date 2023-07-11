@@ -182,15 +182,13 @@ def run_wstart():
         if 'rplstatus' in body_dict:
             if body_dict["rplstatus"] == "START":
                 red.set(i_rpl_status, "START")
-                body_dict["rplstatus"] = "STARTED"
                 del body_dict["rplstatus"]
-            #else:
-                #result={"ok": True, "idjob": "0", "queue": "None",  "rplstatus":  body_dict["rplstatus"] }
-                #return json.dumps(  result ), 200, {'Content-Type':'application/json'}                    
+            else:
+                raise InvalidAPIUsage( "InvalidAPIRequestParams",  "Out of Range value in [rplstatus]", target=label,status_code=422, payload = {"code": "OutOfRangeValue", "description": "Не допустимий діапазон значень rplstatus" } )    
         else:
             rpl_status=red.get(i_rpl_status).decode('UTF-8')
             if rpl_status=="STOP":
-                result={"ok": True, "idjob": "0", "queue": "None",  "rplstatus":  body_dict["rplstatus"] }
+                result={"ok": True, "idjob": "0", "queue": "None",  "rplstatus":  "STOP" }
                 return json.dumps(  result ), 200, {'Content-Type':'application/json'}
 
         rpl_job_id=red.get(i_rpl_job_id).decode('UTF-8')
