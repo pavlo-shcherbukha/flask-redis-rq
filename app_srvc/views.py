@@ -158,110 +158,104 @@ def run_wstart():
         label="POST-Startrobot"
         result={}
         log('PSOT Start Job', label)
-        try:
-            body = request.get_json()
-            body_dict = dict(body)
-            log("Request body is " + json.dumps(body_dict) ,label)
-            if not 'timedelta' in body_dict:
-                raise InvalidAPIUsage( "InvalidAPIRequestParams",  "No key [timedelta]", target=label,status_code=422, payload = {"code": "NoKey", "description": "Не вказано обов'язковий ключ в запиті" } )
+        #try:
+        body = request.get_json()
+        body_dict = dict(body)
+        log("Request body is " + json.dumps(body_dict) ,label)
+        if not 'timedelta' in body_dict:
+            raise InvalidAPIUsage( "InvalidAPIRequestParams",  "No key [timedelta]", target=label,status_code=422, payload = {"code": "NoKey", "description": "Не вказано обов'язковий ключ в запиті" } )
 
-            if not 10 <=  body_dict["timedelta"] <= 360:
-                raise InvalidAPIUsage( "InvalidAPIRequestParams",  "Out of Range value in [timedelta]", target=label,status_code=422, payload = {"code": "OutOfRangeValue", "description": "Не допустимий діапазон значень" } )
+        if not 10 <=  body_dict["timedelta"] <= 360:
+            raise InvalidAPIUsage( "InvalidAPIRequestParams",  "Out of Range value in [timedelta]", target=label,status_code=422, payload = {"code": "OutOfRangeValue", "description": "Не допустимий діапазон значень" } )
 
-            if not 'records' in body_dict:
-                raise InvalidAPIUsage( "InvalidAPIRequestParams",  "No key [records]", target=label,status_code=422, payload = {"code": "NoKey", "description": "Не вказано обов'язковий ключ в запиті" } )
+        if not 'records' in body_dict:
+            raise InvalidAPIUsage( "InvalidAPIRequestParams",  "No key [records]", target=label,status_code=422, payload = {"code": "NoKey", "description": "Не вказано обов'язковий ключ в запиті" } )
+        
+        if not 25 <=  body_dict["records"] <= 200:
+            raise InvalidAPIUsage( "InvalidAPIRequestParams",  "Out of Range value in [records]", target=label,status_code=422, payload = {"code": "OutOfRangeValue", "description": "Не допустимий діапазон значень" } )
+
+        if not 'msg' in body_dict:
+            raise InvalidAPIUsage( "InvalidAPIRequestParams",  "No key [msg]", target=label,status_code=422, payload = {"code": "NoKey", "description": "Не вказано обов'язковий ключ в запиті" } )
+
+        rpl_job_id=red.get(i_rpl_job_id).decode('UTF-8')
+
+        log("Start robot using queue " + q_robot.name ,label)
+        registry = ScheduledJobRegistry(queue=q_robot)
+        log("Шукаю в реєстрі JobID = " + rpl_job_id,label)
+        job_found=False
+        if rpl_job_id != "NONE":
+            registry = ScheduledJobRegistry(queue=q_robot)
+            job_ids=registry.get_job_ids()
             
-            if not 25 <=  body_dict["records"] <= 200:
-                raise InvalidAPIUsage( "InvalidAPIRequestParams",  "Out of Range value in [records]", target=label,status_code=422, payload = {"code": "OutOfRangeValue", "description": "Не допустимий діапазон значень" } )
+            for job_id in job_ids:
+                if job_id ==  rpl_job_id:
+                    job_found=True
+                    log("В реєстрі  вже існує JobID = " + rpl_job_id,label)
+                    break
 
-            if not 'msg' in body_dict:
-                raise InvalidAPIUsage( "InvalidAPIRequestParams",  "No key [msg]", target=label,status_code=422, payload = {"code": "NoKey", "description": "Не вказано обов'язковий ключ в запиті" } )
+        if job_found:
+            raise InvalidAPIUsage( "InvalidAPIRequestParams",  f"Task has allready sheduled [jobid={rpl_job_id} ]", target=label,status_code=422, payload = {"code": "Jobid exists", "description": "ЗАвдання вже поставлено в чергу" } )
+        q_robot.fetch_job
+        idjob=q_robot.enqueue_in( timedelta(seconds=body_dict["timedelta"]),  app_srvc.tasks.task_robot, body_dict)
+        log("В чергу відправлено завдання з jobid=" + idjob.get_id(), label)
+        registry = ScheduledJobRegistry(queue=q_robot)
+        log("Записую в редіс jobid=" + idjob.get_id(), label)
+        red.set(i_rpl_job_id,idjob.get_id() )
+        result={"ok": True, "idjob": idjob.get_id(), "queue": q_robot.name}
+        return json.dumps(  result ), 200, {'Content-Type':'application/json'}
+        #except Exception as e:
+        #    ex_type, ex_value, ex_traceback = sys.exc_info()
+        #    trace_back = traceback.extract_tb(ex_traceback)
+        #    stack_trace = list()
+        #    for trace in trace_back:
+        #        stack_trace.append("File : %s , Line : %d, Func.Name : %s, Message : %s" % (trace[0], trace[1], trace[2], trace[3]))
+        #    #ex_code=e.code
+        #    ex_name=ex_type.__name__
+        #    ex_dsc=ex_value.args[0]
 
-            rpl_job_id=red.get(i_rpl_job_id)
-
-            log("Start robot using queue " + q_robot.name ,label)
-            registry = ScheduledJobRegistry(queue=q_robot)
-            log("Шукаю в реєстрі JobID = " + rpl_job_id,label)
-            job_found=False
-            if rpl_job_id != "NONE":
-                registry = ScheduledJobRegistry(queue=q_robot)
-                job_ids=registry.get_job_ids()
-                
-                for job_id in job_ids:
-                    if job_id ==  rpl_job_id:
-                        job_found=True
-                        log("В реєстрі  вже існує JobID = " + rpl_job_id,label)
-                        break
-
-            if job_found:
-                raise InvalidAPIUsage( "InvalidAPIRequestParams",  f"Task has allready sheduled [jobid={rpl_job_id} ]", target=label,status_code=422, payload = {"code": "Jobid exists", "description": "ЗАвдання вже поставлено в чергу" } )
-
-            #idjob = scheduler.schedule(scheduled_time=datetime.datetime.utcnow(), func= app_srvc.tasks.task_robot, args=[body_dict], repeat=None, interval=body_dict["timedelta"])
-            #djob=scheduler.enqueue_in( timedelta(seconds=body_dict["timedelta"]),  app_srvc.tasks.task_robot, body_dict)
-            #jobcnt=scheduler.count()
-            #scheduler.enqueue_job(idjob)
-            idjob=q_robot.enqueue_in( timedelta(seconds=body_dict["timedelta"]),  app_srvc.tasks.task_robot, body_dict)
-            log("В чергу відправлено завдання з jobid=" + idjob.get_id(), label)
-            registry = ScheduledJobRegistry(queue=q_robot)
-            log("Записую в редіс jobid=" + idjob.get_id(), label)
-            red.set(i_rpl_job_id,idjob.get_id() )
-            result={"ok": True, "idjob": idjob.get_id(), "queue": q_robot.name}
-            return json.dumps(  result ), 200, {'Content-Type':'application/json'}
-        except Exception as e:
-            ex_type, ex_value, ex_traceback = sys.exc_info()
-            trace_back = traceback.extract_tb(ex_traceback)
-            stack_trace = list()
-            for trace in trace_back:
-                stack_trace.append("File : %s , Line : %d, Func.Name : %s, Message : %s" % (trace[0], trace[1], trace[2], trace[3]))
-            #ex_code=e.code
-            ex_name=ex_type.__name__
-            ex_dsc=ex_value.args[0]
-
-            result["ok"]=False
-            result["error"]=ex_dsc
-            result["errorCode"]=ex_name
-            result["trace"]=stack_trace 
-            return json.dumps(result), 422, {'Content-Type':'application/json'}
+        #    result["ok"]=False
+        #    result["error"]=ex_dsc
+        #    result["errorCode"]=ex_name
+        #    result["trace"]=stack_trace 
+        #    return json.dumps(result), 422, {'Content-Type':'application/json'}
     elif request.method=='GET':
         label="GET-Startrobot"
         result={}
         log('GET Start Job', label)
-        try:
-
-            rpl_job_id=red.get(i_rpl_job_id)
-            log("Find robot using queue " + q_robot.name ,label)
+        #try:
+        rpl_job_id=red.get(i_rpl_job_id).decode('UTF-8')
+        log("Find robot using queue " + q_robot.name ,label)
+        registry = ScheduledJobRegistry(queue=q_robot)
+        log("Шукаю в реєстрі JobID = " + rpl_job_id,label)
+        job_found=False
+        if rpl_job_id != "NONE":
             registry = ScheduledJobRegistry(queue=q_robot)
-            log("Шукаю в реєстрі JobID = " + rpl_job_id,label)
-            job_found=False
-            if rpl_job_id != "NONE":
-                registry = ScheduledJobRegistry(queue=q_robot)
-                job_ids=registry.get_job_ids()
-                
-                for job_id in job_ids:
-                    if job_id ==  rpl_job_id:
-                        job_found=True
-                        log("В реєстрі  вже існує JobID = " + rpl_job_id,label)
-                        break
+            job_ids=registry.get_job_ids()
+            
+            for job_id in job_ids:
+                if job_id ==  rpl_job_id:
+                    job_found=True
+                    log("В реєстрі  вже існує JobID = " + rpl_job_id,label)
+                    break
+        result={"ok": True, "idjob": rpl_job_id, "queue": q_robot.name, "status": "NotFound"}
+        if job_found :
+            result["status"]="Found"
+        return json.dumps(  result ), 200, {'Content-Type':'application/json'}
+        #except Exception as e:
+        #    ex_type, ex_value, ex_traceback = sys.exc_info()
+        #    trace_back = traceback.extract_tb(ex_traceback)
+        #    stack_trace = list()
+        #    for trace in trace_back:
+        #        stack_trace.append("File : %s , Line : %d, Func.Name : %s, Message : %s" % (trace[0], trace[1], trace[2], trace[3]))
+        #    #ex_code=e.code
+        #    ex_name=ex_type.__name__
+        #    ex_dsc=ex_value.args[0]
 
-            result={"ok": True, "idjob": rpl_job_id, "queue": q_robot.name, "status": "NotFound"}
-            if job_found :
-                result["status"]="Found"
-            return json.dumps(  result ), 200, {'Content-Type':'application/json'}
-        except Exception as e:
-            ex_type, ex_value, ex_traceback = sys.exc_info()
-            trace_back = traceback.extract_tb(ex_traceback)
-            stack_trace = list()
-            for trace in trace_back:
-                stack_trace.append("File : %s , Line : %d, Func.Name : %s, Message : %s" % (trace[0], trace[1], trace[2], trace[3]))
-            #ex_code=e.code
-            ex_name=ex_type.__name__
-            ex_dsc=ex_value.args[0]
-
-            result["ok"]=False
-            result["error"]=ex_dsc
-            result["errorCode"]=ex_name
-            result["trace"]=stack_trace 
-            return json.dumps(result), 422, {'Content-Type':'application/json'}
+        #    result["ok"]=False
+        #    result["error"]=ex_dsc
+        #    result["errorCode"]=ex_name
+        #    result["trace"]=stack_trace 
+        #    return json.dumps(result), 422, {'Content-Type':'application/json'}
 
 
 @application.route("/api/wstop", methods=["delete"])
