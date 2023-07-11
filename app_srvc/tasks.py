@@ -90,7 +90,7 @@ def task_robot( robot_params ):
 
     delay=random.randint(5, robot_params["timedelta"])     #robot_params["timedelta"]//2
     log( "Запускаю обробник на (сек)" + str(delay), label)
-    #time.sleep(delay)
+    time.sleep(delay)
     #log( "Перезапускаю завдання", label)
     #result = repeatjob(  robot_params )
     #log( "Результат перезапуску", label)
@@ -98,5 +98,5 @@ def task_robot( robot_params ):
     #    log( "Перезапуск успішний " + json.dumps(result), label)
     #else:
     #    log( "Перезапуск НЕЕЕЕ успішний " + json.dumps(result), label)
-    #log( "Зупиняю обробник !!!!", label)
+    log( "Зупиняю обробник !!!!", label)
     return True
