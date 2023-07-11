@@ -83,6 +83,7 @@ irdsq_outmsg = os.getenv('RDSQ_OUTMSG')
 irdsq_robot= os.getenv("RDSQ_ROBOT")
 
 i_rpl_job_id = "repeater_job_id"
+i_rpl_status = "repeater_status"
 
 log('Connec tо redis: ' + 'host=' + irds_host + ' Port=' + irds_port + ' Password: ' + irds_psw )
 log("Connect to Redis")
@@ -96,6 +97,7 @@ if rping:
     q_msg = Queue( name=irdsq_outmsg, connection=red)
     q_robot = Queue(name=irdsq_robot, connection=red)
     red.set(i_rpl_job_id, "NONE")
+    red.set(i_rpl_status, "STOP")
     log("Q LIST")
 else:
     log("redis NOT CONNECTED!!!")    
@@ -151,7 +153,7 @@ def sendmsg():
 def run_wstart():
     """
         start robot with time in sec and number of  fatchaed records
-        request={"timedelta": 15, "records": 20, "msg": "start regular job"}
+        request={"timedelta": 15, "records": 20, "msg": "start regular job", "rplstatus": "START"}
         response={"ok": true, "idjob": "ewrwqeq", "queue": "name"}
     """
     if request.method=='POST':
@@ -176,6 +178,15 @@ def run_wstart():
 
         if not 'msg' in body_dict:
             raise InvalidAPIUsage( "InvalidAPIRequestParams",  "No key [msg]", target=label,status_code=422, payload = {"code": "NoKey", "description": "Не вказано обов'язковий ключ в запиті" } )
+
+        if 'rplstatus' in body_dict:
+            if body_dict["rplstatus"] == "START":
+                red.set(i_rpl_status, "START")
+        else:
+            rpl_status=red.get(i_rpl_status)
+            if rpl_status=="STOP":
+                result={"ok": True, "idjob": "0", "queue": "None"}
+                return json.dumps(  result ), 200, {'Content-Type':'application/json'}
 
         rpl_job_id=red.get(i_rpl_job_id).decode('UTF-8')
 
@@ -286,6 +297,7 @@ def run_wstop():
             job.delete()  
         log('Очищаю ключ поточного JOBS в [' + i_rpl_job_id + ']', label)
         red.set(i_rpl_job_id, "NONE")
+        red.set(i_rpl_status, "STOP")
 
 
         log('Stopped all Jobs', label)

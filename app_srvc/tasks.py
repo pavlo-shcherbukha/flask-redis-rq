@@ -92,6 +92,7 @@ def task_robot( robot_params ):
     log( "Запускаю обробник на (сек)" + str(delay), label)
     time.sleep(delay)
     log( "Перезапускаю завдання", label)
+  
     result = repeatjob(  robot_params )
     log( "Результат перезапуску", label)
     if result['ok']==True:
