@@ -128,7 +128,7 @@ def crttask_sendmsg( message ):
 def task_robot( robot_params ):
     
     label="task_robot"
-    repeat=False
+    repeat=True
     log("task robot", label)
     log("reobot params = " + json.dumps(robot_params), label) 
 
