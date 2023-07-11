@@ -17,12 +17,12 @@ from rq.registry import ScheduledJobRegistry
 
 
 #logging.basicConfig(filename='task.log', level=logging.DEBUG)
-logging.basicConfig( level=logging.DEBUG)
+#logging.basicConfig( level=logging.DEBUG)
 def log( a_msg='NoMessage', a_label='logger' ):
-	dttm = datetime.now()
-	ls_dttm = dttm.strftime('%d-%m-%y %I:%M:%S %p')
-	logging.info(' ['+ls_dttm+'] '+ a_label + ': '+ a_msg)
-	#print(' ['+ls_dttm+'] '+ a_label + ': '+ a_msg)
+	#dttm = datetime.now()
+	#ls_dttm = dttm.strftime('%d-%m-%y %I:%M:%S %p')
+	#logging.info(' ['+ls_dttm+'] '+ a_label + ': '+ a_msg)
+	print(' ['+ls_dttm+'] '+ a_label + ': '+ a_msg)
 
 def repeatjob( jobprm ):
     """
