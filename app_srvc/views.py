@@ -271,6 +271,8 @@ def run_wstop():
         job_list=q_robot.get_jobs()
         for job in job_list:
             job.delete()  
+        registry = ScheduledJobRegistry(queue=q_robot)
+        registry.cleanup()
 
         log('Stopped all Jobs', label)
         result={"ok": True}
