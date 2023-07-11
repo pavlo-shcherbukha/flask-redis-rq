@@ -15,9 +15,15 @@ import rq
 from rq import Queue, Worker, Connection
 from rq.registry import ScheduledJobRegistry
 
+import app_srvc.tasks
 
-#logging.basicConfig(filename='task.log', level=logging.DEBUG)
-#logging.basicConfig( level=logging.DEBUG)
+
+irds_host = os.getenv('RDS_HOST')
+irds_port = os.getenv('RDS_PORT')
+irds_psw = os.getenv('RDS_PSW')
+
+irdsq_outmsg = os.getenv('RDSQ_OUTMSG')
+
 def log( a_msg='NoMessage', a_label='logger' ):
 	dttm = datetime.now()
 	ls_dttm = dttm.strftime('%d-%m-%y %I:%M:%S %p')
@@ -71,6 +77,13 @@ def get_data():
         Read data From database or Webservce
         For test purpose we are using test rest api: https://gorest.co.in/public/v2/todos
         @@see https://gorest.co.in/ , Resources todos
+        item={
+                "id":19984,
+                "user_id":3589895,
+                "title":"Vinco cultellus utor ait adficio in.",
+                "due_on":"2023-08-09T00:00:00.000+05:30",
+                "status":"pending"
+            }
 
     """
 
@@ -139,6 +152,21 @@ def task_robot( robot_params ):
     #delay=random.randint(5, robot_params["timedelta"])     #robot_params["timedelta"]//2
     #log( "Запускаю обробник на (сек)" + str(delay), label)
     #time.sleep(delay)
+
+    log('Connec tо redis: ' + 'host=' + irds_host + ' Port=' + irds_port + ' Password: ' + irds_psw, label )
+    log("Connect to Redis", , label)
+    red = redis.StrictRedis(irds_host, irds_port, charset="utf-8", password=irds_psw, decode_responses=False)
+    log(" Trying PING",  label)
+    rping=red.ping()
+    log( str(rping) )
+    if rping:
+        log("redis Connected" , label)
+        q_msg = Queue( name=irdsq_outmsg, connection=red)
+
+    else:
+        log("redis NOT CONNECTED!!!", label)    
+
+
     log( "Отримую набір даних для обробки" , label)
     result_data=get_data()
     log( "Аналізую дані", label)
@@ -146,6 +174,10 @@ def task_robot( robot_params ):
         datalist=result_data["resBody"]
         datalen=len(datalist)
         log( f"Отримано {datalen} записів" , label)
+        for item in datalist:
+            log("Обробляю  отримані записи", label)
+            job=q_msg.enqueue(  app_srvc.tasks.task_processor, item )
+            log( f"Запис {item['id']}  відправлено в чергу jobid={job.get_id}", label)
 
     else:
         log( "Помилка при виконанні завдання: " + json.dumps(result), label)
@@ -166,3 +198,13 @@ def task_robot( robot_params ):
 
     log( "Обробник роботу виконав !!!!", label)
     return True
+
+def task_processor( todo_item ):
+    label="task_processor"
+    log("task processor", label)
+    log("Обробляю запис " + json.dumps(todo_item), label)
+    log( "======================================================================", label)
+    log( "Обробник роботу виконав !!!!", label)
+    log( "======================================================================", label)
+    return True
+
