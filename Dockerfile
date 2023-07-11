@@ -20,7 +20,7 @@ RUN echo "python /opt/app-root/src/manage.py" >> /opt/app-root/etc/workerapp.sh
 
 RUN echo "rq worker QUE_OUTMSG -u redis://:qq@redis:6379/0"  >> /opt/app-root/etc/rqworker.sh
 
-RUN echo "rq worker QUE_ROBOT -u redis://:qq@redis:6379/0 --with-scheduler -b"  >> /opt/app-root/etc/dbscanner.sh
+RUN echo "rq worker QUE_ROBOT -u redis://:qq@redis:6379/0 --with-scheduler"  >> /opt/app-root/etc/dbscanner.sh
 
 RUN echo "python /opt/app-root/lib/python3.9/site-packages/rq_scheduler/scripts/rqscheduler.py -b -H redis -p 6379 -d 0 -P qq -i 5"  >> /opt/app-root/etc/repeater.sh
 
