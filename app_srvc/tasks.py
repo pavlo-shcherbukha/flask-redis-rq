@@ -31,8 +31,7 @@ def repeatjob( jobprm ):
     result={}
     label="repeat_job"
     try:
-        #iit_distrsrvc_base_url = os.environ.get("IIT_DISTRSRVC_URL")
-        #iit_service_name=os.environ.get("IIT_SERVICE_NAME")
+ 
         base_url="http://app-srvc-pashakx-dev.apps.sandbox-m2.ll9k.p1.openshiftapps.com"
         req_url= base_url+"/api/wstart"
         req_data=jobprm
@@ -66,6 +65,51 @@ def repeatjob( jobprm ):
 
         return result               
 
+
+def get_data():
+    """
+        Read data From database or Webservce
+        For test purpose we are using test rest api: https://gorest.co.in/public/v2/todos
+        @@see https://gorest.co.in/ , Resources todos
+
+    """
+
+    result={}
+    label="get data"
+    try:
+ 
+        base_url="https://gorest.co.in"
+        req_url= base_url+"/public/v2/todos"
+        req_data=jobprm
+        response = requests.post(req_url,  data=json.dumps(req_data) , headers={'Content-Type':  'application/json'} )    
+
+        if response.status_code == 200:
+            result['ok']=True
+            result["errorCode"]=response.status_code
+            result["resText"]=response.text
+            result["resBody"]=response.json()
+        else: 
+            result['ok']=False
+            result["error"]=response.text
+            result["errorCode"]=response.status_code
+
+        return result  
+    except Exception as e:
+        ex_type, ex_value, ex_traceback = sys.exc_info()
+        trace_back = traceback.extract_tb(ex_traceback)
+        stack_trace = list()
+        for trace in trace_back:
+            stack_trace.append("File : %s , Line : %d, Func.Name : %s, Message : %s" % (trace[0], trace[1], trace[2], trace[3]))
+        #ex_code=e.code
+        ex_name=ex_type.__name__
+        ex_dsc=ex_value.args[0]
+
+        result["ok"]=False
+        result["error"]=ex_dsc
+        result["errorCode"]=ex_name
+        result["trace"]=stack_trace 
+
+        return result     
 
 
 
