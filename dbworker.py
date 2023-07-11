@@ -42,7 +42,7 @@ def run_worker():
             #else:
             #    log("running worker " + curentjob.get_id(), label)
             #    log("running worker " + curentjob.exc_info(), label)
-            worker.work(logging_level="DEBUG", with_scheduler=True, burst=True)
+            worker.work(logging_level="DEBUG", with_scheduler=True)
             #worker.work()
             log("reshedule job", label)
             #queue.enqueue_job(job=curentjob)
