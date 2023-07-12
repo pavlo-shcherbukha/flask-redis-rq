@@ -31,7 +31,8 @@
                 "RDS_PORT": "16379",
                 "RDS_PSW":  "qq",
                 "RDSQ_OUTMSG": "QUE_OUTMSG",
-                "RDSQ_ROBOT": "QUE_ROBOT"
+                "RDSQ_ROBOT": "QUE_ROBOT",
+                "RDSQ_USRREG": "QUE_USRREG",
 
             },
             "args": [
@@ -70,6 +71,24 @@
                 "RDS_PSW":  "qq",
                 "RDSQ_OUTMSG": "QUE_OUTMSG",
                 "RDSQ_ROBOT": "QUE_ROBOT"
+            },
+            "args": [
+                "test",
+
+            ]
+        }, 
+        {
+            "name": "Python: worker_usrreg.py",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/usrregworker.py",
+            "env": {
+                "RDS_HOST": "localhost",
+                "RDS_PORT": "16379",
+                "RDS_PSW":  "qq",
+                "RDSQ_OUTMSG": "QUE_OUTMSG",
+                "RDSQ_ROBOT": "QUE_ROBOT",
+                "RDSQ_USRREG": "QUE_USRREG",
             },
             "args": [
                 "test",

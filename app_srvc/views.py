@@ -19,6 +19,7 @@ from rq_scheduler import Scheduler
 from app_srvc.Errors import AppError, AppValidationError, InvalidAPIUsage
 #from app_srvc.tasks import crttask_sendmsg
 import app_srvc.tasks
+import app_srvc.task_usrreg
 
 application = Flask(__name__)
 cli = FlaskGroup(create_app=application)
@@ -70,6 +71,42 @@ def about():
     """
     return render_template("about.html")
 
+@application.route("/userreg/")
+def ui_user_reg_form():
+    """
+        Render the user regustration form
+    """
+    return render_template("user_reg_form.html")
+
+@application.route("/userregres/", methods=["POST"])
+def ui_user_reg_res():
+    """
+        User registration 
+        Process POST request
+        Send user data from http form into queue 
+    """
+    label="ui_user_reg_res" 
+    body={}
+    mimetype = request.mimetype
+    log("choose right  mimetype", label)
+    if mimetype == 'application/x-www-form-urlencoded':
+        iterator=iter(request.form.keys())
+        for x in iterator:
+            body[x]=request.form[x]            
+    elif mimetype == 'application/json':
+        body = request.get_json()
+    else:
+        orm = request.data.decode()
+
+    log('Request body is: ' + json.dumps(  body ), label)
+    log( "Send the body into queue " + q_usrreg.name, label)
+    job=q_usrreg.enqueue(app_srvc.task_usrreg.task_processor, body)
+    log( "Message sent into queue with job_id="+ job.get_id())
+    log('Вертаю результат: ' )
+
+    return render_template("user_reg_resp.html" , data={ "jobid": job.get_id(), "queue": q_usrreg.name})
+    
+
 
 
 # Redis Connect
@@ -81,9 +118,11 @@ irds_psw = os.getenv('RDS_PSW')
 
 irdsq_outmsg = os.getenv('RDSQ_OUTMSG')
 irdsq_robot= os.getenv("RDSQ_ROBOT")
+irdsq_usrreg= os.getenv("RDSQ_USRREG")
 
 i_rpl_job_id = "repeater_job_id"
 i_rpl_status = "repeater_status"
+
 
 log('Connec tо redis: ' + 'host=' + irds_host + ' Port=' + irds_port + ' Password: ' + irds_psw )
 log("Connect to Redis")
@@ -96,6 +135,7 @@ if rping:
     q = Queue(connection=red)
     q_msg = Queue( name=irdsq_outmsg, connection=red)
     q_robot = Queue(name=irdsq_robot, connection=red)
+    q_usrreg = Queue(name=irdsq_usrreg, connection=red)
     red.set(i_rpl_job_id, "NONE")
     red.set(i_rpl_status, "STOP")
     log("Q LIST")
