@@ -1,0 +1,31 @@
+﻿{% extends "layout.html" %}
+{% block title %}
+Завантаження ключа з файла
+{% endblock %}
+
+{% block content %}
+      <p>
+            Тестова форма реєстрації користувача. 
+            Використовується для демонстрації розміщення дних форми в чергу та обробки повідмлення обробником черги
+            Обробник простий, просто виводить в лог отримані параметри
+
+      </p>
+      <form action = "/userregres/" method = "POST" enctype="application/json">
+         <label for="szFirstName">Ім1я</label>
+         <input type = "text" name = "szFirstName" size="60" />
+         <br><br>
+         <label for="szLastName">Прізвище</label>
+         <input type = "text" name = "szLastName" size="60" />
+         <br><br>
+         <label for="szLogin">Логін</label>
+         <input type = "text" name = "szLogin" size="30" />
+         <br><br>
+         <label for="szEmail">E-MAIL</label>
+         <input type = "text" name = "szEmail" size="30" />
+         <br><br>
+         <label for="szPhone">Телефон</label>
+         <input type = "text" name = "szPhone" size="30" />
+         <br><br>
+         <input type = "submit"/>
+      </form>   
+{% endblock %}
