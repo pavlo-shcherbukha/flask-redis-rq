@@ -78,33 +78,7 @@ def ui_user_reg_form():
     """
     return render_template("user_reg_form.html")
 
-@application.route("/userregres/", methods=["POST"])
-def ui_user_reg_res():
-    """
-        User registration 
-        Process POST request
-        Send user data from http form into queue 
-    """
-    label="ui_user_reg_res" 
-    body={}
-    mimetype = request.mimetype
-    log("choose right  mimetype", label)
-    if mimetype == 'application/x-www-form-urlencoded':
-        iterator=iter(request.form.keys())
-        for x in iterator:
-            body[x]=request.form[x]            
-    elif mimetype == 'application/json':
-        body = request.get_json()
-    else:
-        orm = request.data.decode()
 
-    log('Request body is: ' + json.dumps(  body ), label)
-    log( "Send the body into queue " + q_usrreg.name, label)
-    job=q_usrreg.enqueue(app_srvc.task_usrreg.task_processor, body)
-    log( "Message sent into queue with job_id="+ job.get_id())
-    log('Вертаю результат: ' )
-
-    return render_template("user_reg_resp.html" , data={ "jobid": job.get_id(), "queue": q_usrreg.name})
     
 
 
@@ -144,7 +118,33 @@ else:
 
 
 
+@application.route("/userregres/", methods=["POST"])
+def ui_user_reg_res():
+    """
+        User registration 
+        Process POST request
+        Send user data from http form into queue 
+    """
+    label="ui_user_reg_res" 
+    body={}
+    mimetype = request.mimetype
+    log("choose right  mimetype", label)
+    if mimetype == 'application/x-www-form-urlencoded':
+        iterator=iter(request.form.keys())
+        for x in iterator:
+            body[x]=request.form[x]            
+    elif mimetype == 'application/json':
+        body = request.get_json()
+    else:
+        orm = request.data.decode()
 
+    log('Request body is: ' + json.dumps(  body ), label)
+    log( "Send the body into queue " + q_usrreg.name, label)
+    job=q_usrreg.enqueue(app_srvc.task_usrreg.task_processor, body)
+    log( "Message sent into queue with job_id="+ job.get_id())
+    log('Вертаю результат: ' )
+
+    return render_template("user_reg_resp.html" , data={ "jobid": job.get_id(), "queue": q_usrreg.name})
 
 
 
