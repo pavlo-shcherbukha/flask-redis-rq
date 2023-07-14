@@ -2,7 +2,8 @@ import sys
 import os
 import redis
 import rq
-from rq import Queue, Worker, Connection, WorkerPool
+from rq import Queue, Worker, Connection
+from rq.worker_pool import WorkerPool
 import logging
 from datetime import datetime,timedelta
 import time 
