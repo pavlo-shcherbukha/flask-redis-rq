@@ -42,7 +42,7 @@ def run_worker():
 
     log("Create worker", label)
     #worker = Worker(map(Queue, listen))
-    workerpool = WorkerPool(map(Queue, listen), connection=red, num_workers=5)
+    workerpool = WorkerPool(  listen , connection=red, num_workers=5)
     #log("Create worker-OK [" + worker.name + "]", label)
     log("Create worker-OK " , label)
     try:
