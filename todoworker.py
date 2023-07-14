@@ -38,24 +38,25 @@ def run_worker():
     listen = [irdsq_outmsg]
     queue = Queue(irdsq_outmsg, connection=red)
     log("running worker", label)
-    with Connection(red):
-        log("Create worker", label)
-        #worker = Worker(map(Queue, listen))
-        workerpool = WorkerPool(map(Queue, listen), num_workers=5)
-        #log("Create worker-OK [" + worker.name + "]", label)
-        log("Create worker-OK " , label)
-        try:
-            log("Start worker", label)
-            #worker.work(logging_level="DEBUG", with_scheduler=False)
-            workerpool.start(logging_level="DEBUG")
-            log("Worker is finished", label)
-        except Exception as e:
-            print(e)   
-            
-        log('Worker has finished', label)
-        #log('Successful jobs: ' + str(worker.successful_job_count), label)
-        #log('Failed jobs: ' + str(worker.failed_job_count), label)
-        #log('Total working time: '+ str(worker.total_working_time), label) 
+    #with Connection(red):
+
+    log("Create worker", label)
+    #worker = Worker(map(Queue, listen))
+    workerpool = WorkerPool(map(Queue, listen), connection=red, num_workers=5)
+    #log("Create worker-OK [" + worker.name + "]", label)
+    log("Create worker-OK " , label)
+    try:
+        log("Start worker", label)
+        #worker.work(logging_level="DEBUG", with_scheduler=False)
+        workerpool.start(logging_level="DEBUG")
+        log("Worker is finished", label)
+    except Exception as e:
+        print(e)   
+        
+    log('Worker has finished', label)
+    #log('Successful jobs: ' + str(worker.successful_job_count), label)
+    #log('Failed jobs: ' + str(worker.failed_job_count), label)
+    #log('Total working time: '+ str(worker.total_working_time), label) 
 
 if __name__ == '__main__':
     run_worker()
