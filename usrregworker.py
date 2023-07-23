@@ -52,5 +52,5 @@ def run_worker():
 
 if __name__ == '__main__':
     run_worker()
-    ##param={"szFirstName": "Nocolo", "szLastName": "Paganini", "szLogin": "PANIC", "szEmail": "PANIC@GMAIL.COM", "szPhone": "+380501112233"}
+    #param={"szFirstName": "Nocolo", "szLastName": "Paganini", "szLogin": "PANIC", "szEmail": "PANIC@GMAIL.COM", "szPhone": "+380501112233"}
     ##app_srvc.task_usrreg.task_processor(param)

@@ -1,0 +1,27 @@
+SET client_encoding = 'UTF8';
+
+insert into test.rusrs
+(firstname, lastname, login , email, phone ) 
+values
+('Petro', 'ERSHOW', 'user1','pet@gmai.com', '+380501112233');
+
+
+insert into test.rusrs
+(firstname, lastname, login , email, phone ) 
+values
+('Semion', 'Markovich', 'user2', 'sem@gmai.com', '+380501114455');
+
+
+insert into test.rusrs
+( firstname, lastname, login , email, phone ) 
+values
+('Shlioma', 'Mimi', 'user3', 'mimi@gmai.com', '+380501116677');
+
+insert into test.rusrs
+(firstname, lastname, login , email, phone ) 
+values
+('Химка', 'Суха', 'user4', 'mimi@gmai.com', '+380501113322');
+
+
+
+select * from test.rusrs;

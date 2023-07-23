@@ -14,6 +14,7 @@ import rq
 from rq import Queue, Worker, Connection
 from rq.registry import ScheduledJobRegistry
 from rq_scheduler import Scheduler
+import psycopg2
 
 
 from app_srvc.Errors import AppError, AppValidationError, InvalidAPIUsage
@@ -117,6 +118,16 @@ else:
     log("redis NOT CONNECTED!!!")    
 
 
+log("Connect to POSTGRESQL")
+
+ipg_host = os.getenv('PG_HOST')
+ipg_port = os.getenv('PG_PORT')
+ipg_user = os.getenv('PG_USER')
+ipg_psw = os.getenv('PG_PSW')
+ipg_db = os.getenv('PG_DB')
+
+
+
 
 @application.route("/userregres/", methods=["POST"])
 def ui_user_reg_res():
@@ -146,6 +157,70 @@ def ui_user_reg_res():
 
     return render_template("user_reg_resp.html" , data={ "jobid": job.get_id(), "queue": q_usrreg.name})
 
+@application.route("/userlist/", methods=["GET"])
+def ui_user_list():
+    label="ui_user_list"
+    log("Підлючаюся до БД", label)
+    result={}
+    try:
+        conn = psycopg2.connect(database=ipg_db,
+                            host=ipg_host,
+                            user=ipg_user,
+                            password=ipg_psw,
+                            port=ipg_port)
+        log("Відкриваю курсор", label)
+        cursor = conn.cursor()
+        log("Виконю вставку", label)
+        cursor.execute("SELECT * FROM test.rusrs")
+        log("Отримую всі записи", label)
+        userlist=cursor.fetchall()
+        log("Закриваю курсор", label)
+        cursor.close()
+        log("Відключаюся від БД", label)
+        conn.close()
+        allusers=[]
+
+        for usertup in userlist:
+            xuser={}
+            for i,  useratt  in enumerate(usertup):
+                #(iduser, firstname, lastname, login , email, phone, status, v1,v2,v3, v4,v5,v6)
+                #
+                if i == 0: 
+                    xuser["iduser"]=useratt
+                elif i ==1 :
+                    xuser["firstname"]=useratt
+                elif i ==2 :    
+                    xuser["lastname"]=useratt
+                elif i ==3 :       
+                    xuser["login"]=useratt
+                elif i ==4 :
+                    xuser["email"]=useratt
+                elif i ==5 :
+                    xuser["phone"]=useratt
+                elif i ==6 :
+                    xuser["status"]=useratt
+            allusers.append(xuser)
+              
+
+        return render_template("user_list.html" , data=allusers )
+    except Exception as e:
+        ex_type, ex_value, ex_traceback = sys.exc_info()
+        trace_back = traceback.extract_tb(ex_traceback)
+        stack_trace = list()
+        for trace in trace_back:
+            stack_trace.append("File : %s , Line : %d, Func.Name : %s, Message : %s" % (trace[0], trace[1], trace[2], trace[3]))
+            #ex_code=e.code
+            ex_name=ex_type.__name__
+            ex_dsc=ex_value.args[0]
+
+        result["ok"]=False
+        result["error"]=ex_dsc
+        result["errorCode"]=ex_name
+        result["trace"]=stack_trace 
+        return json.dumps(result), 422, {'Content-Type':'application/json'}
+
+
+    
 
 
 """

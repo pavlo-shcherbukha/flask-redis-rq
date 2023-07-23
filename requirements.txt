@@ -7,3 +7,4 @@ rq
 rq_scheduler
 ptvsd 
 debugpy
+psycopg2
