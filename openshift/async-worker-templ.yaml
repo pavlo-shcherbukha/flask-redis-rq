@@ -114,6 +114,18 @@ objects:
               value: QUE_OUTMSG
             - name: RDSQ_ROBOT
               value: QUE_ROBOT
+            - name: RDSQ_USRREG
+              value: QUE_USRREG
+            - name: PG_HOST
+              value: postgresql
+            - name: PG_PORT
+              value: "5432"
+            - name: PG_USER
+              value: devadm
+            - name: PG_PSW
+              value: "22"
+            - name: PG_DB
+              value: tododb 
             imagePullPolicy: Always
             name: "${APP_SERVICE_NAME}"
             resources: {}

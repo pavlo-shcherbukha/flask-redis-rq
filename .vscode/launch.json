@@ -33,6 +33,11 @@
                 "RDSQ_OUTMSG": "QUE_OUTMSG",
                 "RDSQ_ROBOT": "QUE_ROBOT",
                 "RDSQ_USRREG": "QUE_USRREG",
+                "PG_HOST": "localhost",
+                "PG_PORT": "15432",
+                "PG_DB": "tododb",
+                "PG_USER": "devadm",
+                "PG_PSW": "22"                
 
             },
             "args": [
@@ -89,6 +94,11 @@
                 "RDSQ_OUTMSG": "QUE_OUTMSG",
                 "RDSQ_ROBOT": "QUE_ROBOT",
                 "RDSQ_USRREG": "QUE_USRREG",
+                "PG_HOST": "localhost",
+                "PG_PORT": "15432",
+                "PG_DB": "tododb",
+                "PG_USER": "devadm",
+                "PG_PSW": "22"
             },
             "args": [
                 "test",
